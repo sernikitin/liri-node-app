@@ -3,6 +3,7 @@ var keys = require('./keys.js');
 var Spotify = require('node-spotify-api');
 var Twitter = require('twitter');
 var inquirer = require('inquirer');
+var request = require("request");
 
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
@@ -18,7 +19,7 @@ inquirer.prompt([
       type: "list",
       name: "userInput",
       message: "Looking for Tweets or songs ?",
-      choices:['Tweets', 'Songs']
+      choices:['Tweets', 'Songs','Movie']
     }
   ]).then(function(select) {
     if( select.userInput=="Tweets"){
@@ -29,6 +30,10 @@ inquirer.prompt([
         //if spot was selected 
         newSpot()
     }
+    else if(select.userInput=="Movie"){
+      //if spot was selected 
+      movie()
+  }
   });
 
 //ask more questions on what they want lol
@@ -74,27 +79,6 @@ inquirer
       });
 })
 }
-// function newSpotold(){
-//     var parameters = {
-//         type : 'track',
-//         query : oldinput,
-//         limit: 20 
-//     }
-
-//     spotify.search(parameters, function(err, data) {
-//         if (err) {
-//           return console.log('Error occurred: ' + err);
-//         }
-//         for (i=0; i<data.tracks.items.length; i++){
-//             var newSearch = data.tracks.items[i].name;
-//             var secSearch = data.tracks.items[i].album.external_urls.spotify
-//         }
-//         console.log(secSearch)
-//       console.log(newSearch); 
-//       });
-// }
-
-
 
 //logic for searching tweets by user id 
 function newTwit(){
@@ -128,25 +112,37 @@ function newTwit(){
    })
   })
 }
+function movie(){
+  inquirer
+  .prompt([
+    {
+      type: 'input',
+      name: 'theme',
+      message: 'Search for movie name :' +'\n',
+      name:'lol'
+    },
+  ])
+.then(function(answer){
+  console.log(answer.lol)
+     request("http://www.omdbapi.com/?t="+answer.lol+"&apikey=trilogy", function(error, response, body) {
+  if (!error && response.statusCode === 200) {
+    console.log(`
+    *******
+    * Title of the movie:  ${JSON.parse(body).Title}
+    * Year the movie came out:  ${JSON.parse(body).Year}
+    * IMDB Rating of the movie:  ${JSON.parse(body).Rated}
+    * Rotten Tomatoes Rating of the movie:  ${JSON.parse(body).Value}
+    * Country where the movie was produced:  ${JSON.parse(body).Country}
+    * Language of the movie:  ${JSON.parse(body).Language}
+    * Plot of the movie:  ${JSON.parse(body).Plot}
+    * Actors in the movie.:  ${JSON.parse(body).Actors}
+    *******
+    `)
+  }
+});
+})
 
-
-
-// function newTwit(){
-//     var parameters = {
-//         screen_name : oldinput,
-//         count : 5
-//     }
-//     console.log("newTwit")
-//     console.log(parameters)
-//     client.get('statuses/user_timeline',parameters, function(err, tweets){
-//     if (err) {
-//         return console.log(err);
-//       }
-//       for(i=0; i<tweets.length;i++){
-//           var postingNew = ('letsee'+ '\n'+tweets[i].created_at+ '\n'+ tweets[i].text+'\n'+'new stuff     '+ tweets[i].user.location)
-//           console.log(postingNew)
-//       }
-//    })
-// }
+ 
+}
 
 

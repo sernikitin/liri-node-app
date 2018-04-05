@@ -25,5 +25,6 @@
     "request": "^2.85.0",
     "spotify-web-api-node": "^3.0.0",
     "twitter": "^1.7.1"
-  }
+  },
+  "devDependencies": {}
 }
